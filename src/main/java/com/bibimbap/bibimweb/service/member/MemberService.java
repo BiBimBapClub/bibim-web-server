@@ -40,7 +40,7 @@ public class MemberService {
     }
 
     public MemberResponseDto createMember(MemberCreateDto dto) {
-        Member newMember = mapper.map(dto, Member.class);
+        Member newMember = dto.toEntity();
         newMember.setId(null);
         return mapper.map(memberRepository.save(newMember), MemberResponseDto.class);
     }

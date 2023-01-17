@@ -11,15 +11,7 @@ import javax.persistence.Entity;
 
 @Entity
 @SuperBuilder @Getter @Setter @ToString(callSuper = true)
-@AllArgsConstructor @NoArgsConstructor
+@AllArgsConstructor
 @DiscriminatorValue("byProject")
 public class ProjectTeam extends Team {
-    @Column(name = "content")
-    private String content;
-
-    @Override
-    public void update(TeamUpdateDto dto) {
-        super.update(dto);
-        this.content = ((ProjectTeamUpdateDto) dto).getContent();
-    }
 }

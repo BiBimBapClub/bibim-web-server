@@ -10,6 +10,8 @@ import com.bibimbap.bibimweb.service.role.MemberRoleService;
 import com.bibimbap.bibimweb.util.exception.ConflictException;
 import com.bibimbap.bibimweb.util.exception.NotFoundException;
 import com.bibimbap.bibimweb.util.exception.OutOfRangeException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;

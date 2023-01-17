@@ -12,12 +12,8 @@ import java.util.List;
 
 @Entity
 @SuperBuilder @Getter @Setter
-@AllArgsConstructor @NoArgsConstructor
+@AllArgsConstructor
 @DiscriminatorValue("byStudy")
 public class StudyTeam extends Team {
-    @OneToMany
-    @JoinColumn(name = "team_id")
-    @Builder.Default
-    private List<StudyDetail> details = new ArrayList<>();
 
 }
