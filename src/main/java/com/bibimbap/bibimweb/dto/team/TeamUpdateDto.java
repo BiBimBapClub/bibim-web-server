@@ -17,6 +17,7 @@ public class TeamUpdateDto {
     private String groupName;
     private String gitURL;
     private String blogURL;
+    private String description;
     private Long leaderId;
     @Builder.Default
     private List<Long> members = new ArrayList<>();

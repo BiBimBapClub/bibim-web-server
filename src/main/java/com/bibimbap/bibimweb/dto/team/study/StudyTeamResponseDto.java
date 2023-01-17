@@ -14,5 +14,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StudyTeamResponseDto extends TeamResponseDto {
-    List<StudyDetailResponseDto> details;
+    List<StudyDetailResponseDto> posts;
 }

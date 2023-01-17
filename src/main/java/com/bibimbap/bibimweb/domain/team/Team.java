@@ -31,6 +31,9 @@ public class Team {
     @Column(name = "period")
     private Integer period = LocalDate.now().getYear();
 
+    @Column(name = "description")
+    private String description;
+
     @Column(name = "git_url")
     private String gitURL;
 
@@ -49,9 +52,15 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private List<TeamTag> tags = new ArrayList<>();
 
+    @OneToMany
+    @JoinColumn(name = "team_id")
+    @Builder.Default
+    private List<TeamPost> posts = new ArrayList<>();
+
     public void update(TeamUpdateDto dto) {
         this.groupName = dto.getGroupName();
         this.gitURL = dto.getGitURL();
         this.blogURL = dto.getBlogURL();
+        this.description = dto.getDescription();
     }
 }

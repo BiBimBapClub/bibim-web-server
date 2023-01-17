@@ -24,6 +24,7 @@ public class TeamResponseDto {
     private Integer period;
     private String gitURL;
     private String blogURL;
+    private String description;
 
     private MemberTeamResponseDto leader;
     @Builder.Default

@@ -10,8 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @SuperBuilder
-@NoArgsConstructor
 @AllArgsConstructor
 public class ProjectTeamUpdateDto extends TeamUpdateDto {
-    private String content;
+
 }

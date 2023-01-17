@@ -10,17 +10,16 @@ import com.bibimbap.bibimweb.dto.team.project.ProjectTeamResponseDto;
 import com.bibimbap.bibimweb.repository.team.review.ReviewRepository;
 import com.bibimbap.bibimweb.service.lib.MemberManager;
 import com.bibimbap.bibimweb.service.member.MemberService;
-import com.bibimbap.bibimweb.service.team.ProjectTeamService;
+import com.bibimbap.bibimweb.service.team.ProjectTeamServicev1;
 import com.bibimbap.bibimweb.service.team.ReviewService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -40,15 +39,15 @@ public class ReviewServiceTest {
     @Autowired
     MemberService memberService;
     @Autowired
-    ProjectTeamService projectTeamService;
+    ProjectTeamServicev1 projectTeamServicev1;
 
     @Test
     @DisplayName("리뷰 통합 테스트")
     void createReview() {
         MemberResponseDto memberA = memberManager.createMember("memberA", "11");
         MemberResponseDto memberB = memberManager.createMember("memberB", "22");
-        ProjectTeamResponseDto team = projectTeamService.createProjectTeam(ProjectTeamCreateDto.builder()
-                .content("123")
+        ProjectTeamResponseDto team = projectTeamServicev1.createProjectTeam(ProjectTeamCreateDto.builder()
+                .description("123")
                 .leaderId(memberA.getId())
                 .groupName("team1")
                 .build());
@@ -71,13 +70,16 @@ public class ReviewServiceTest {
         assertThat(findReview.getMember().getId()).isEqualTo(memberA.getId());
         assertThat(findReview.getTeam().getId()).isEqualTo(team.getId());
 
+
         List<ReviewResponseDto> reviewList = reviewService.getReviewList(PageRequest.of(0, 10), null);
         assertThat(reviewList.size()).isEqualTo(2);
         assertThat(reviewList.stream().anyMatch(review -> review.getId().equals(saved.getId()))).isTrue();
         assertThat(reviewList.stream().anyMatch(review -> review.getId().equals(saved2.getId()))).isTrue();
         List<ReviewResponseDto> reviewList2 = reviewService.getReviewList(PageRequest.of(0, 10), 2021);
         assertThat(reviewList2.size()).isEqualTo(0);
-        List<ReviewResponseDto> reviewList3 = reviewService.getReviewList(PageRequest.of(0, 10), 2022);
+
+        int YEAR = LocalDate.now().getYear();
+        List<ReviewResponseDto> reviewList3 = reviewService.getReviewList(PageRequest.of(0, 10), YEAR);
         assertThat(reviewList3.size()).isEqualTo(2);
         assertThat(reviewList3.stream().anyMatch(review -> review.getId().equals(saved.getId()))).isTrue();
         assertThat(reviewList3.stream().anyMatch(review -> review.getId().equals(saved2.getId()))).isTrue();

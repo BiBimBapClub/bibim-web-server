@@ -118,7 +118,7 @@ class MemberServiceTest {
         String newPosition = "회장";
         memberRoleService.updateAdminRole(AdminMemberDto.builder()
                 .memberId(member.getId())
-                .position(position)
+                .position(newPosition)
                 .build());
 
         Member findMember = memberRepository.findById(member.getId()).get();

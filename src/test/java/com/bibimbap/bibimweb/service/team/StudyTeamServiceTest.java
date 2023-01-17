@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.*;
 public class StudyTeamServiceTest {
 
     @Autowired
-    StudyTeamService studyTeamService;
+    StudyTeamServicev1 studyTeamServicev1;
     @Autowired
     StudyTeamRepository studyTeamRepository;
     @Autowired
@@ -43,10 +43,15 @@ public class StudyTeamServiceTest {
         members.add(memberB.getId());
         members.add(memberC.getId());
 
-        StudyTeamResponseDto team1 = studyTeamService.createStudyTeam(StudyTeamCreateDto.builder()
+        Map<Long, Integer> groupMap = new HashMap<>();
+        groupMap.put(memberB.getId(), 1);
+        groupMap.put(memberC.getId(), 1);
+
+        StudyTeamResponseDto team1 = studyTeamServicev1.createStudyTeam(StudyTeamCreateDto.builder()
                 .groupName("team1")
                 .leaderId(memberA.getId())
                 .members(members)
+                .groupNumbers(groupMap)
                 .build());
 
         assertThat(team1.getLeader().getId()).isEqualTo(memberA.getId());
@@ -69,7 +74,7 @@ public class StudyTeamServiceTest {
         groupMapping.put(memberB.getId(), 1);
         groupMapping.put(memberC.getId(), 2);
 
-        StudyTeamResponseDto team1 = studyTeamService.createStudyTeam(StudyTeamCreateDto.builder()
+        StudyTeamResponseDto team1 = studyTeamServicev1.createStudyTeam(StudyTeamCreateDto.builder()
                 .groupName("team1")
                 .leaderId(memberA.getId())
                 .members(members)
@@ -84,7 +89,7 @@ public class StudyTeamServiceTest {
                 .build()));
 
         System.out.println("1주차 활동 추가");
-        StudyDetailResponseDto res = studyTeamService.addStudyDetail(StudyDetailCreateDto.builder()
+        StudyDetailResponseDto res = studyTeamServicev1.addStudyDetail(StudyDetailCreateDto.builder()
                 .teamId(team1.getId())
                 .content("1주차 활동")
                 .week(1)
@@ -99,7 +104,7 @@ public class StudyTeamServiceTest {
                 .build()));
 
         System.out.println("2주차 활동 추가");
-        StudyDetailResponseDto res2 = studyTeamService.addStudyDetail(StudyDetailCreateDto.builder()
+        StudyDetailResponseDto res2 = studyTeamServicev1.addStudyDetail(StudyDetailCreateDto.builder()
                 .teamId(team1.getId())
                 .content("2주차 활동")
                 .week(2)

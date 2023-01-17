@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudyDetail {
+public class TeamPost {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,5 +30,5 @@ public class StudyDetail {
 
     @ManyToOne
     @JoinColumn(name = "team_id")
-    private StudyTeam studyTeam;
+    private Team team;
 }

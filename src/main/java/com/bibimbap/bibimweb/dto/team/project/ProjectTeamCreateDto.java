@@ -11,8 +11,7 @@ import java.util.List;
 @Setter
 @SuperBuilder
 @ToString
-@NoArgsConstructor
 @AllArgsConstructor
 public class ProjectTeamCreateDto extends TeamCreateDto {
-    private String content;
+
 }
