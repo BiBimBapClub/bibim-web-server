@@ -3,12 +3,7 @@ package com.bibimbap.bibimweb.controller.team;
 import com.bibimbap.bibimweb.dto.team.study.StudyTeamCreateDto;
 import com.bibimbap.bibimweb.dto.team.study.StudyTeamResponseDto;
 import com.bibimbap.bibimweb.dto.team.study.StudyTeamUpdateDto;
-import com.bibimbap.bibimweb.dto.team.study.detail.StudyDetailCreateDto;
-import com.bibimbap.bibimweb.dto.team.study.detail.StudyDetailResponseDto;
-import com.bibimbap.bibimweb.dto.team.study.detail.StudyDetailUpdateDto;
 import com.bibimbap.bibimweb.service.team.StudyTeamService;
-import com.bibimbap.bibimweb.service.team.legacy.StudyTeamServicev1;
-import com.bibimbap.bibimweb.util.exception.NotFoundException;
 import com.bibimbap.bibimweb.util.exception.OutOfRangeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -45,34 +40,14 @@ public class StudyTeamController {
         return studyTeamService.getStudyTeamList(pageable, year, tag);
     }
 
-    @GetMapping("/details/{detailId}")
-    public StudyDetailResponseDto getStudyDetailById(@PathVariable Long detailId) {
-        return studyTeamService.getStudyDetailById(detailId);
-    }
-
     @PutMapping("/")
     public StudyTeamResponseDto updateStudyTeam(@RequestBody StudyTeamUpdateDto team) {
-
-        if (studyTeamService.isNotExistTeam(team.getId())) {
-            throw NotFoundException.STUDY_GROUP;
-        }
-        return studyTeamService.updateStudyTeam(team);
-    }
-
-    @PutMapping("/details/")
-    public StudyDetailResponseDto updateStudyDetail(@RequestBody StudyDetailUpdateDto detail) {
-        return studyTeamService.updateStudyDetail(detail);
+        return studyTeamService.updateTeam(team);
     }
 
     @DeleteMapping("/{teamId}")
     public ResponseEntity deleteStudyTeam(@PathVariable Long teamId) {
-        studyTeamService.deleteStudyTeam(teamId);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
-    }
-
-    @DeleteMapping("/details/{detailId}")
-    public ResponseEntity deleteStudyDetail(@PathVariable Long detailId) {
-        studyTeamService.deleteStudyDetail(detailId);
+        studyTeamService.deleteTeam(teamId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 

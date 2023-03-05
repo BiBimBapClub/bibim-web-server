@@ -24,6 +24,7 @@ import com.bibimbap.bibimweb.service.role.TeamRoleService;
 import com.bibimbap.bibimweb.service.team.nested.TagService;
 import com.bibimbap.bibimweb.service.team.nested.TeamPostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -197,8 +198,13 @@ public class TeamServiceImpl implements TeamService, ProjectTeamService, StudyTe
 
     @Override
     @Transactional
-    public List<StudyTeamResponseDto> getStudyTeamList() {
+    public List<StudyTeamResponseDto> getStudyTeamList(Pageable pageable, String year ,String tag) {
         List<StudyTeam> list = studyTeamRepository.findAll();
         return list.stream().map(studyTeam -> StudyTeamResponseDto.valueOf(studyTeam)).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isValidPage(Pageable pageable) {
+        return false;
     }
 }
