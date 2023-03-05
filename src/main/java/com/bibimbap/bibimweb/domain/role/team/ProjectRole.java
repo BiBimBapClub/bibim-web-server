@@ -13,10 +13,8 @@ import javax.persistence.*;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @DiscriminatorValue("byProject")
 public class ProjectRole extends Role {
-    @Column(name = "field")
-    private String field;
+
 }
 

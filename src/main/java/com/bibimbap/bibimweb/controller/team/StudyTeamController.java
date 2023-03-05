@@ -6,7 +6,8 @@ import com.bibimbap.bibimweb.dto.team.study.StudyTeamUpdateDto;
 import com.bibimbap.bibimweb.dto.team.study.detail.StudyDetailCreateDto;
 import com.bibimbap.bibimweb.dto.team.study.detail.StudyDetailResponseDto;
 import com.bibimbap.bibimweb.dto.team.study.detail.StudyDetailUpdateDto;
-import com.bibimbap.bibimweb.service.team.StudyTeamServicev1;
+import com.bibimbap.bibimweb.service.team.StudyTeamService;
+import com.bibimbap.bibimweb.service.team.legacy.StudyTeamServicev1;
 import com.bibimbap.bibimweb.util.exception.NotFoundException;
 import com.bibimbap.bibimweb.util.exception.OutOfRangeException;
 import lombok.RequiredArgsConstructor;
@@ -22,67 +23,56 @@ import java.util.List;
 @RequestMapping(value = "/teams/study", produces = "application/json; charset=UTF8")
 public class StudyTeamController {
 
-    private final StudyTeamServicev1 studyTeamServicev1;
+    private final StudyTeamService studyTeamService;
 
     @PostMapping("/")
     public StudyTeamResponseDto createStudyTeam(@RequestBody StudyTeamCreateDto team) {
-        return studyTeamServicev1.createStudyTeam(team);
-    }
-
-    @PostMapping("/details/")
-    public StudyDetailResponseDto createStudyDetail(@RequestBody StudyDetailCreateDto detail) {
-        if (studyTeamServicev1.isNotExistTeam(detail.getTeamId())) {
-            throw NotFoundException.STUDY_GROUP;
-        }
-        return studyTeamServicev1.addStudyDetail(detail);
+        return studyTeamService.createStudyTeam(team);
     }
 
     @GetMapping("/{teamId}")
     public StudyTeamResponseDto getStudyTeamById(@PathVariable Long teamId) {
-        if (studyTeamServicev1.isNotExistTeam(teamId)) {
-            throw NotFoundException.STUDY_GROUP;
-        }
-        return studyTeamServicev1.getStudyTeamById(teamId);
+        return studyTeamService.getStudyTeamById(teamId);
     }
 
     @GetMapping("/")
     public List<StudyTeamResponseDto> getStudyTeamList(Pageable pageable,
                                                        @RequestParam(required = false, defaultValue = "") String year,
                                                        @RequestParam(required = false, defaultValue = "") String tag) {
-        if (!studyTeamServicev1.isValidPage(pageable)) {
+        if (!studyTeamService.isValidPage(pageable)) {
             throw OutOfRangeException.PAGE;
         }
-        return studyTeamServicev1.getStudyTeamList(pageable, year, tag);
+        return studyTeamService.getStudyTeamList(pageable, year, tag);
     }
 
     @GetMapping("/details/{detailId}")
     public StudyDetailResponseDto getStudyDetailById(@PathVariable Long detailId) {
-        return studyTeamServicev1.getStudyDetailById(detailId);
+        return studyTeamService.getStudyDetailById(detailId);
     }
 
     @PutMapping("/")
     public StudyTeamResponseDto updateStudyTeam(@RequestBody StudyTeamUpdateDto team) {
 
-        if (studyTeamServicev1.isNotExistTeam(team.getId())) {
+        if (studyTeamService.isNotExistTeam(team.getId())) {
             throw NotFoundException.STUDY_GROUP;
         }
-        return studyTeamServicev1.updateStudyTeam(team);
+        return studyTeamService.updateStudyTeam(team);
     }
 
     @PutMapping("/details/")
     public StudyDetailResponseDto updateStudyDetail(@RequestBody StudyDetailUpdateDto detail) {
-        return studyTeamServicev1.updateStudyDetail(detail);
+        return studyTeamService.updateStudyDetail(detail);
     }
 
     @DeleteMapping("/{teamId}")
     public ResponseEntity deleteStudyTeam(@PathVariable Long teamId) {
-        studyTeamServicev1.deleteStudyTeam(teamId);
+        studyTeamService.deleteStudyTeam(teamId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/details/{detailId}")
     public ResponseEntity deleteStudyDetail(@PathVariable Long detailId) {
-        studyTeamServicev1.deleteStudyDetail(detailId);
+        studyTeamService.deleteStudyDetail(detailId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 

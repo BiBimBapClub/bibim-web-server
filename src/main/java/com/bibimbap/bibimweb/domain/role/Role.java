@@ -29,4 +29,9 @@ public class Role  {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public void removeRelation() {
+        this.team.getMemberRoles().remove(this);
+        this.member.getRoles().remove(this);
+    }
 }

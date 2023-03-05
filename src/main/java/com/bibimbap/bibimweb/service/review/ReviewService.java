@@ -1,4 +1,4 @@
-package com.bibimbap.bibimweb.service.team;
+package com.bibimbap.bibimweb.service.review;
 
 import com.bibimbap.bibimweb.domain.member.Member;
 import com.bibimbap.bibimweb.domain.team.Team;

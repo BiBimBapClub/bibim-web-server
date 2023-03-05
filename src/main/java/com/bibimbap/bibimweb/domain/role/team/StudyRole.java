@@ -14,13 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @DiscriminatorValue("byStudy")
 public class StudyRole extends Role {
-    @Column(name = "group_number")
-    private Integer groupNumber;
 
-    @Column(name = "attendance")
-    @Builder.Default
-    private String attendance = "";
 }

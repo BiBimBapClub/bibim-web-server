@@ -15,5 +15,5 @@ import java.util.Map;
 @SuperBuilder
 @NoArgsConstructor
 public class StudyTeamUpdateDto extends TeamUpdateDto {
-    private Map<Long,Integer> groupNumbers;
+
 }

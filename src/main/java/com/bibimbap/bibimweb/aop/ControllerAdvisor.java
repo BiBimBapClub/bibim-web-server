@@ -26,4 +26,9 @@ public class ControllerAdvisor {
     public ResponseEntity handleNotFoundException(NotFoundException e) {
         return new ResponseEntity(new ErrorResultDto(e.getMessage()), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handleInvalidArgumentException(IllegalArgumentException e) {
+        return new ResponseEntity(new ErrorResultDto(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

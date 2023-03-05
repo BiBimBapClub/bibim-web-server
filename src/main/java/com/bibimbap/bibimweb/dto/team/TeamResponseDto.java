@@ -32,12 +32,21 @@ public class TeamResponseDto {
     @Builder.Default
     private List<String> tags = new ArrayList<>();
 
-    public void setMembersAndTags(Team team) {
-        ModelMapper mapper = new ModelMapper();
-        this.setMembers(team.getMemberRoles().stream()
-                .filter(role -> role.getRollName().equals("MEMBER"))
-                .map(role -> mapper.map(role.getMember(), MemberTeamResponseDto.class))
-                .collect(Collectors.toList()));
-        this.setTags(team.getTags().stream().map(tag -> tag.getTag().getName()).collect(Collectors.toList()));
+    public static TeamResponseDto valueOf(Team team) {
+        return TeamResponseDto.builder()
+                .id(team.getId())
+                .groupName(team.getGroupName())
+                .period(team.getPeriod())
+                .gitURL(team.getGitURL())
+                .blogURL(team.getBlogURL())
+                .description(team.getDescription())
+                .leader(MemberTeamResponseDto.valueOf(team.getLeader()))
+                .members(team.getMemberRoles().stream()
+                        .map(mr->MemberTeamResponseDto.valueOf(mr.getMember()))
+                        .collect(Collectors.toList()))
+                .tags(team.getTags().stream()
+                        .map(tag->tag.getTag().getName())
+                        .collect(Collectors.toList()))
+                .build();
     }
 }

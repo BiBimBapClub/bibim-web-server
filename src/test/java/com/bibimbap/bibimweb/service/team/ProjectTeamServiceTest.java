@@ -16,6 +16,7 @@ import com.bibimbap.bibimweb.repository.team.project.ProjectTeamRepository;
 import com.bibimbap.bibimweb.repository.team.tag.TagRepository;
 import com.bibimbap.bibimweb.repository.team.tag.TeamTagRepository;
 import com.bibimbap.bibimweb.service.lib.MemberManager;
+import com.bibimbap.bibimweb.service.team.legacy.ProjectTeamServicev1;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

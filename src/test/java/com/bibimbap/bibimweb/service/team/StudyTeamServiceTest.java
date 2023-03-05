@@ -3,11 +3,9 @@ package com.bibimbap.bibimweb.service.team;
 import com.bibimbap.bibimweb.dto.member.MemberResponseDto;
 import com.bibimbap.bibimweb.dto.team.study.StudyTeamCreateDto;
 import com.bibimbap.bibimweb.dto.team.study.StudyTeamResponseDto;
-import com.bibimbap.bibimweb.dto.team.study.detail.AttendanceManageDto;
-import com.bibimbap.bibimweb.dto.team.study.detail.StudyDetailCreateDto;
-import com.bibimbap.bibimweb.dto.team.study.detail.StudyDetailResponseDto;
 import com.bibimbap.bibimweb.repository.team.study.StudyTeamRepository;
 import com.bibimbap.bibimweb.service.lib.MemberManager;
+import com.bibimbap.bibimweb.service.team.legacy.StudyTeamServicev1;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +49,6 @@ public class StudyTeamServiceTest {
                 .groupName("team1")
                 .leaderId(memberA.getId())
                 .members(members)
-                .groupNumbers(groupMap)
                 .build());
 
         assertThat(team1.getLeader().getId()).isEqualTo(memberA.getId());
@@ -78,38 +75,37 @@ public class StudyTeamServiceTest {
                 .groupName("team1")
                 .leaderId(memberA.getId())
                 .members(members)
-                .groupNumbers(groupMapping)
                 .build());
 
-        List<AttendanceManageDto> attendances = new ArrayList<>();
-        members.forEach(memberId -> attendances.add(AttendanceManageDto.builder()
-                .week(1)
-                .memberId(memberId)
-                .isAttend(true)
-                .build()));
-
-        System.out.println("1주차 활동 추가");
-        StudyDetailResponseDto res = studyTeamServicev1.addStudyDetail(StudyDetailCreateDto.builder()
-                .teamId(team1.getId())
-                .content("1주차 활동")
-                .week(1)
-                .attendances(attendances)
-                .build());
-
-        List<AttendanceManageDto> attendances2 = new ArrayList<>();
-        members.forEach(memberId -> attendances2.add(AttendanceManageDto.builder()
-                .week(2)
-                .memberId(memberId)
-                .isAttend(false)
-                .build()));
-
-        System.out.println("2주차 활동 추가");
-        StudyDetailResponseDto res2 = studyTeamServicev1.addStudyDetail(StudyDetailCreateDto.builder()
-                .teamId(team1.getId())
-                .content("2주차 활동")
-                .week(2)
-                .attendances(attendances2)
-                .build());
-        System.out.println(res2);
+//        List<AttendanceManageDto> attendances = new ArrayList<>();
+//        members.forEach(memberId -> attendances.add(AttendanceManageDto.builder()
+//                .week(1)
+//                .memberId(memberId)
+//                .isAttend(true)
+//                .build()));
+//
+//        System.out.println("1주차 활동 추가");
+//        StudyDetailResponseDto res = studyTeamServicev1.addStudyDetail(StudyDetailCreateDto.builder()
+//                .teamId(team1.getId())
+//                .content("1주차 활동")
+//                .week(1)
+//                .attendances(attendances)
+//                .build());
+//
+//        List<AttendanceManageDto> attendances2 = new ArrayList<>();
+//        members.forEach(memberId -> attendances2.add(AttendanceManageDto.builder()
+//                .week(2)
+//                .memberId(memberId)
+//                .isAttend(false)
+//                .build()));
+//
+//        System.out.println("2주차 활동 추가");
+//        StudyDetailResponseDto res2 = studyTeamServicev1.addStudyDetail(StudyDetailCreateDto.builder()
+//                .teamId(team1.getId())
+//                .content("2주차 활동")
+//                .week(2)
+//                .attendances(attendances2)
+//                .build());
+//        System.out.println(res2);
     }
 }

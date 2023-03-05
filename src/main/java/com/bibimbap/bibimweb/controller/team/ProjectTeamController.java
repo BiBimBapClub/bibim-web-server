@@ -3,7 +3,7 @@ package com.bibimbap.bibimweb.controller.team;
 import com.bibimbap.bibimweb.dto.team.project.ProjectTeamCreateDto;
 import com.bibimbap.bibimweb.dto.team.project.ProjectTeamResponseDto;
 import com.bibimbap.bibimweb.dto.team.project.ProjectTeamUpdateDto;
-import com.bibimbap.bibimweb.service.team.ProjectTeamServicev1;
+import com.bibimbap.bibimweb.service.team.legacy.ProjectTeamServicev1;
 import com.bibimbap.bibimweb.util.exception.NotFoundException;
 import com.bibimbap.bibimweb.util.exception.OutOfRangeException;
 import lombok.RequiredArgsConstructor;

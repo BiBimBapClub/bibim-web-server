@@ -1,4 +1,4 @@
-package com.bibimbap.bibimweb.service.team;
+package com.bibimbap.bibimweb.service.team.nested;
 
 import com.bibimbap.bibimweb.domain.team.Team;
 import com.bibimbap.bibimweb.domain.team.tag.Tag;
@@ -57,14 +57,14 @@ public class TagService {
 
         Team team = teamRepository.findById(teamId).get();
         List<TeamTag> deleteList = new ArrayList<>();
-        team.getTags().forEach(tt -> {
-            if (!newTagNames.contains(tt.getTag().getName())) {
-                deleteList.add(tt);
+        team.getTags().forEach(teamTag -> {
+            if (!newTagNames.contains(teamTag.getTag().getName())) {
+                deleteList.add(teamTag);
             }
         });
-        deleteList.forEach(tt -> {
-            this.deleteTeamTagById(tt.getId());
-            team.getTags().remove(tt);
+        deleteList.forEach(teamTag -> {
+            this.deleteTeamTagById(teamTag);
+            team.getTags().remove(teamTag);
         });
         this.saveTags(teamId, newTagNames);
     }
@@ -73,13 +73,18 @@ public class TagService {
     public void deleteAllTeamTag(Long teamId) {
         List<TeamTag> teamTags = teamTagRepository.findAllByTeamId(teamId);
         for (TeamTag teamTag : teamTags) {
-            this.deleteTeamTagById(teamTag.getId());
+            this.deleteTeamTagById(teamTag);
         }
     }
 
-    public void deleteTeamTagById(Long teamTagId) {
-        Long tagId = teamTagRepository.findById(teamTagId).get().getTag().getId();
+    public void deleteTeamTagById(TeamTag teamTag) {
+        Long teamTagId = teamTag.getId();
+        teamTag.getTeam().getTags().remove(teamTag);
+        teamTag.getTag().getTeamTagList().remove(teamTag);
         teamTagRepository.deleteById(teamTagId);
+
+        // 더 이상 그 레이블의 태그를 쓰는 팀이 없다면 삭제
+        Long tagId = teamTag.getTag().getId();
         if (!teamTagRepository.existsByTagId(tagId)) {
             tagRepository.deleteById(tagId);
         }

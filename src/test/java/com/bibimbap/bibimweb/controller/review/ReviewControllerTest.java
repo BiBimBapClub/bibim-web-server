@@ -8,7 +8,7 @@ import com.bibimbap.bibimweb.dto.review.ReviewCreateDto;
 import com.bibimbap.bibimweb.dto.team.study.StudyTeamCreateDto;
 import com.bibimbap.bibimweb.dto.team.study.StudyTeamResponseDto;
 import com.bibimbap.bibimweb.service.lib.MemberManager;
-import com.bibimbap.bibimweb.service.team.StudyTeamServicev1;
+import com.bibimbap.bibimweb.service.team.legacy.StudyTeamServicev1;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,7 +51,6 @@ public class ReviewControllerTest {
                 .groupName("team1")
                 .leaderId(memberA.getId())
                 .members(members)
-                .groupNumbers(groupMap)
                 .build());
         mockMvc.perform(post("/reviews/")
                         .content(mapper.writeValueAsString(ReviewCreateDto.builder()

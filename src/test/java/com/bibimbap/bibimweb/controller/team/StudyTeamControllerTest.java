@@ -6,8 +6,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.bibimbap.bibimweb.dto.member.MemberResponseDto;
 import com.bibimbap.bibimweb.dto.team.study.StudyTeamCreateDto;
 import com.bibimbap.bibimweb.dto.team.study.StudyTeamResponseDto;
-import com.bibimbap.bibimweb.dto.team.study.detail.AttendanceManageDto;
-import com.bibimbap.bibimweb.dto.team.study.detail.StudyDetailCreateDto;
 import com.bibimbap.bibimweb.service.lib.MemberManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,42 +76,42 @@ public class StudyTeamControllerTest {
 
         StudyTeamResponseDto response = objectMapper.readValue(res, StudyTeamResponseDto.class);
 
-        List<AttendanceManageDto> attendances = new ArrayList<>();
-        attendances.add(AttendanceManageDto.builder()
-                .week(1)
-                .isAttend(true)
-                .memberId(memberB.getId())
-                .build());
-        attendances.add(AttendanceManageDto.builder()
-                .week(1)
-                .isAttend(true)
-                .memberId(memberC.getId())
-                .build());
-
-        mockMvc.perform(post("/teams/study/details/")
-                        .content(objectMapper.writeValueAsString(StudyDetailCreateDto.builder()
-                                .week(1)
-                                .teamId(response.getId())
-                                .content("1주차 활동")
-                                .attendances(attendances)
-                                .build()))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(MockMvcResultHandlers.print());
-
-        mockMvc.perform(post("/teams/study/details/")
-                        .content(objectMapper.writeValueAsString(StudyDetailCreateDto.builder()
-                                .week(1)
-                                .teamId(response.getId())
-                                .content("1주차 활동")
-                                .attendances(attendances)
-                                .build()))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(MockMvcResultHandlers.print());
-
-        mockMvc.perform(get("/teams/study/details/2"))
-                .andDo(MockMvcResultHandlers.print());
+//        List<AttendanceManageDto> attendances = new ArrayList<>();
+//        attendances.add(AttendanceManageDto.builder()
+//                .week(1)
+//                .isAttend(true)
+//                .memberId(memberB.getId())
+//                .build());
+//        attendances.add(AttendanceManageDto.builder()
+//                .week(1)
+//                .isAttend(true)
+//                .memberId(memberC.getId())
+//                .build());
+//
+//        mockMvc.perform(post("/teams/study/details/")
+//                        .content(objectMapper.writeValueAsString(StudyDetailCreateDto.builder()
+//                                .week(1)
+//                                .teamId(response.getId())
+//                                .content("1주차 활동")
+//                                .attendances(attendances)
+//                                .build()))
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andDo(MockMvcResultHandlers.print());
+//
+//        mockMvc.perform(post("/teams/study/details/")
+//                        .content(objectMapper.writeValueAsString(StudyDetailCreateDto.builder()
+//                                .week(1)
+//                                .teamId(response.getId())
+//                                .content("1주차 활동")
+//                                .attendances(attendances)
+//                                .build()))
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andDo(MockMvcResultHandlers.print());
+//
+//        mockMvc.perform(get("/teams/study/details/2"))
+//                .andDo(MockMvcResultHandlers.print());
     }
 
 }

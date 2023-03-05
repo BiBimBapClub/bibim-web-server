@@ -3,7 +3,7 @@ package com.bibimbap.bibimweb.controller.review;
 import com.bibimbap.bibimweb.dto.review.ReviewCreateDto;
 import com.bibimbap.bibimweb.dto.review.ReviewResponseDto;
 import com.bibimbap.bibimweb.dto.review.ReviewUpdateDto;
-import com.bibimbap.bibimweb.service.team.ReviewService;
+import com.bibimbap.bibimweb.service.review.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;

@@ -8,7 +8,7 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class TeamReviewResponseDto {
+public class TeamOnReviewPageResponseDto {
     private Long id;
     private String groupName;
     private Integer period;
