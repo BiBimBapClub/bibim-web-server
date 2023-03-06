@@ -1,14 +1,11 @@
 package com.bibimbap.bibimweb.controller.review;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import com.bibimbap.bibimweb.dto.member.MemberResponseDto;
 import com.bibimbap.bibimweb.dto.review.ReviewCreateDto;
 import com.bibimbap.bibimweb.dto.team.study.StudyTeamCreateDto;
 import com.bibimbap.bibimweb.dto.team.study.StudyTeamResponseDto;
 import com.bibimbap.bibimweb.service.lib.MemberManager;
-import com.bibimbap.bibimweb.service.team.legacy.StudyTeamServicev1;
+import com.bibimbap.bibimweb.service.team.StudyTeamService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,13 +21,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
 public class ReviewControllerTest {
 
     @Autowired
-    StudyTeamServicev1 studyTeamServicev1;
+    StudyTeamService studyTeamService;
     @Autowired
     MemberManager memberManager;
     @Autowired
@@ -47,7 +47,7 @@ public class ReviewControllerTest {
         members.add(memberA.getId());
         Map<Long, Integer> groupMap = new HashMap<>();
         groupMap.put(memberA.getId(), 1);
-        StudyTeamResponseDto team1 = studyTeamServicev1.createStudyTeam(StudyTeamCreateDto.builder()
+        StudyTeamResponseDto team1 = studyTeamService.createStudyTeam(StudyTeamCreateDto.builder()
                 .groupName("team1")
                 .leaderId(memberA.getId())
                 .members(members)

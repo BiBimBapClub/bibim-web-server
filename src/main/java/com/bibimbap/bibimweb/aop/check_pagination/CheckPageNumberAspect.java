@@ -22,6 +22,5 @@ public class CheckPageNumberAspect {
         Signature signature = jp.getSignature();
         String returnType = signature.toLongString()
                 .split(WHITESPACE)[RETURN_TYPE];
-        
     }
 }

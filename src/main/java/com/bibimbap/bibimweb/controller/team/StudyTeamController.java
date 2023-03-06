@@ -34,7 +34,7 @@ public class StudyTeamController {
     public List<StudyTeamResponseDto> getStudyTeamList(Pageable pageable,
                                                        @RequestParam(required = false, defaultValue = "") String year,
                                                        @RequestParam(required = false, defaultValue = "") String tag) {
-        if (!studyTeamService.isValidPage(pageable)) {
+        if (!studyTeamService.isValidPageOnStudyTeam(pageable)) {
             throw OutOfRangeException.PAGE;
         }
         return studyTeamService.getStudyTeamList(pageable, year, tag);
@@ -42,7 +42,7 @@ public class StudyTeamController {
 
     @PutMapping("/")
     public StudyTeamResponseDto updateStudyTeam(@RequestBody StudyTeamUpdateDto team) {
-        return studyTeamService.updateTeam(team);
+        return StudyTeamResponseDto.valueOf(studyTeamService.updateTeam(team));
     }
 
     @DeleteMapping("/{teamId}")

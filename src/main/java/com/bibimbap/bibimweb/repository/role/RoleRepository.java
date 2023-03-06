@@ -13,6 +13,6 @@ import java.util.Optional;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
     Optional<Role> findByTeamAndMemberAndRollName(Team team, Member member, String rollName);
-
+    List<Role> findAllByTeamId(Long teamId);
     List<Role> findAllByTeam(Team team);
 }

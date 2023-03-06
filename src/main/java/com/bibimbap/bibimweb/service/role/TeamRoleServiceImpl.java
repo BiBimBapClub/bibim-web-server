@@ -27,18 +27,6 @@ public class TeamRoleServiceImpl implements TeamRoleService,StudyTeamRoleService
     @Transactional
     @Override
     public void addProjectTeamRole(Team team, Member member, RoleName roleName) {
-        StudyRole saved = studyRoleRepository.save(StudyRole.builder()
-                .team(team)
-                .member(member)
-                .rollName(roleName.name())
-                .build());
-        team.getMemberRoles().add(saved);
-        member.getRoles().add(saved);
-    }
-
-    @Transactional
-    @Override
-    public void addStudyTeamRole(Team team, Member member, RoleName roleName) {
         ProjectRole saved = projectRoleRepository.save(ProjectRole.builder()
                 .team(team)
                 .member(member)
@@ -46,6 +34,24 @@ public class TeamRoleServiceImpl implements TeamRoleService,StudyTeamRoleService
                 .build());
         team.getMemberRoles().add(saved);
         member.getRoles().add(saved);
+        if (roleName == RoleName.LEADER) {
+            team.setLeader(member);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void addStudyTeamRole(Team team, Member member, RoleName roleName) {
+        StudyRole saved = studyRoleRepository.save(StudyRole.builder()
+                .team(team)
+                .member(member)
+                .rollName(roleName.name())
+                .build());
+        team.getMemberRoles().add(saved);
+        member.getRoles().add(saved);
+        if (roleName == RoleName.LEADER) {
+            team.setLeader(member);
+        }
     }
 
     @Override
@@ -57,6 +63,8 @@ public class TeamRoleServiceImpl implements TeamRoleService,StudyTeamRoleService
                 .build());
         team.getMemberRoles().add(saved);
         member.getRoles().add(saved);
+        if(roleName.equals(RoleName.LEADER))
+            team.setLeader(member);
     }
 
     @Transactional
@@ -105,7 +113,11 @@ public class TeamRoleServiceImpl implements TeamRoleService,StudyTeamRoleService
         if (optionalRole.isPresent()) {
             Role role = optionalRole.get();
             role.getMember().getRoles().remove(role);
+
             role.setMember(newLeader);
+            newLeader.getRoles().add(role);
+
+            team.setLeader(newLeader);
         }
     }
 

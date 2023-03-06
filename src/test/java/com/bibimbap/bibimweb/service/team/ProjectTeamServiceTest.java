@@ -1,7 +1,6 @@
 package com.bibimbap.bibimweb.service.team;
 
 import com.bibimbap.bibimweb.domain.member.Member;
-import com.bibimbap.bibimweb.domain.role.team.ProjectRole;
 import com.bibimbap.bibimweb.domain.role.Role;
 import com.bibimbap.bibimweb.domain.team.ProjectTeam;
 import com.bibimbap.bibimweb.domain.team.tag.TeamTag;
@@ -11,32 +10,31 @@ import com.bibimbap.bibimweb.dto.team.project.ProjectTeamCreateDto;
 import com.bibimbap.bibimweb.dto.team.project.ProjectTeamResponseDto;
 import com.bibimbap.bibimweb.dto.team.project.ProjectTeamUpdateDto;
 import com.bibimbap.bibimweb.repository.member.MemberRepository;
-import com.bibimbap.bibimweb.repository.role.ProjectRoleRepository;
+import com.bibimbap.bibimweb.repository.role.RoleRepository;
 import com.bibimbap.bibimweb.repository.team.project.ProjectTeamRepository;
 import com.bibimbap.bibimweb.repository.team.tag.TagRepository;
 import com.bibimbap.bibimweb.repository.team.tag.TeamTagRepository;
 import com.bibimbap.bibimweb.service.lib.MemberManager;
-import com.bibimbap.bibimweb.service.team.legacy.ProjectTeamServicev1;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Nested;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 
 import javax.transaction.Transactional;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
 class ProjectTeamServiceTest {
 
     @Autowired
-    ProjectTeamServicev1 projectTeamServicev1;
+    ProjectTeamService projectTeamService;
     @Autowired
     ProjectTeamRepository projectTeamRepository;
     @Autowired
@@ -44,7 +42,7 @@ class ProjectTeamServiceTest {
     @Autowired
     TeamTagRepository teamTagRepository;
     @Autowired
-    ProjectRoleRepository projectRoleRepository;
+    RoleRepository projectRoleRepository;
     @Autowired
     MemberManager memberManager;
     @Autowired
@@ -77,7 +75,7 @@ class ProjectTeamServiceTest {
                 .tags(tagList)
                 .build();
 
-        ProjectTeamResponseDto saved = projectTeamServicev1.createProjectTeam(dto);
+        ProjectTeamResponseDto saved = projectTeamService.createProjectTeam(dto);
 
         // ProjectTeam
         assertThat(saved.getGroupName()).isEqualTo(groupName);
@@ -96,9 +94,9 @@ class ProjectTeamServiceTest {
             assertThat(memberList.stream().anyMatch(id -> member.getId() == id)).isTrue();
         }
         // Role
-        List<ProjectRole> roles = projectRoleRepository.findAllByTeamId(saved.getId());
+        List<Role> roles = projectRoleRepository.findAllByTeamId(saved.getId());
         assertThat(roles.size()).isEqualTo(memberList.size() + 1);
-        for (ProjectRole role : roles) {
+        for (Role role : roles) {
             if (role.getRollName() == "LEADER") {
                 assertThat(role.getMember().getId()).isEqualTo(memberA.getId());
                 assertThat(role.getRollName()).isEqualTo("LEADER");
@@ -173,7 +171,7 @@ class ProjectTeamServiceTest {
                 .tags(tagList)
                 .build();
 
-        ProjectTeamResponseDto saved = projectTeamServicev1.createProjectTeam(dto);
+        ProjectTeamResponseDto saved = projectTeamService.createProjectTeam(dto);
 
         groupName = "UpdateTeam1";
         content = "UpdateContent";
@@ -187,7 +185,7 @@ class ProjectTeamServiceTest {
                 .tags(tagList)
                 .build();
 
-        ProjectTeamResponseDto updateProjectTeam = projectTeamServicev1.updateProjectTeam(updateDto);
+        ProjectTeamResponseDto updateProjectTeam = ProjectTeamResponseDto.valueOf(projectTeamService.updateTeam(updateDto));
 
         assertThat(updateProjectTeam.getId()).isEqualTo(saved.getId());
         assertThat(updateProjectTeam.getPeriod()).isEqualTo(LocalDate.now().getYear());
@@ -195,8 +193,8 @@ class ProjectTeamServiceTest {
         assertThat(updateProjectTeam.getDescription()).isEqualTo(content);
 
         // Role.Team
-        List<ProjectRole> roleListByTeamId = projectRoleRepository.findAllByTeamId(updateProjectTeam.getId());
-        for (ProjectRole projectRole : roleListByTeamId) {
+        List<Role> roleListByTeamId = projectRoleRepository.findAllByTeamId(updateProjectTeam.getId());
+        for (Role projectRole : roleListByTeamId) {
             assertThat(projectRole.getTeam().getGroupName()).isEqualTo(groupName);
             assertThat(projectRole.getTeam().getPeriod()).isEqualTo((LocalDate.now().getYear()));
         }
@@ -243,7 +241,9 @@ class ProjectTeamServiceTest {
                 .tags(tagList)
                 .build();
 
-        ProjectTeamResponseDto saved = projectTeamServicev1.createProjectTeam(dto);
+
+        ProjectTeamResponseDto saved = projectTeamService.createProjectTeam(dto);
+
 
         MemberResponseDto memberD = memberManager.createMember("memberD", "444");
 
@@ -256,7 +256,7 @@ class ProjectTeamServiceTest {
                 .tags(tagList)
                 .build();
 
-        ProjectTeamResponseDto updateProjectTeam = projectTeamServicev1.updateProjectTeam(updateDto);
+        ProjectTeamResponseDto updateProjectTeam = ProjectTeamResponseDto.valueOf(projectTeamService.updateTeam(updateDto));
 
         // Team.Leader == newLeader
         ProjectTeam findProjectTeam = projectTeamRepository.findById(updateProjectTeam.getId()).get();
@@ -272,7 +272,7 @@ class ProjectTeamServiceTest {
                 .anyMatch(r -> r.getTeam().getId() == updateProjectTeam.getId()
                         && r.getRollName().equals("LEADER"))).isTrue();
         // roleList -> newLeader role add
-        List<ProjectRole> roleList = projectRoleRepository.findAllByTeamId(updateProjectTeam.getId());
+        List<Role> roleList = projectRoleRepository.findAllByTeamId(updateProjectTeam.getId());
         assertThat(roleList.stream()
                 .anyMatch(r -> r.getTeam().getId() == updateProjectTeam.getId()
                         && r.getRollName().equals("LEADER")
@@ -309,11 +309,11 @@ class ProjectTeamServiceTest {
                 .tags(tagList)
                 .build();
 
-        ProjectTeamResponseDto saved = projectTeamServicev1.createProjectTeam(dto);
+        ProjectTeamResponseDto saved = projectTeamService.createProjectTeam(dto);
 
-        List<ProjectRole> before = projectRoleRepository.findAllByTeamId(saved.getId());
+        List<Role> before = projectRoleRepository.findAllByTeamId(saved.getId());
         System.out.println("BEFORE");
-        for (ProjectRole projectRole : before) {
+        for (Role projectRole : before) {
             System.out.println(projectRole.getMember().getName() + " / "
                     + projectRole.getTeam().getGroupName() + " / "
                     + projectRole.getRollName());
@@ -332,7 +332,7 @@ class ProjectTeamServiceTest {
                 .tags(tagList)
                 .build();
 
-        ProjectTeamResponseDto updateProjectTeam = projectTeamServicev1.updateProjectTeam(updateDto);
+        ProjectTeamResponseDto updateProjectTeam = ProjectTeamResponseDto.valueOf(projectTeamService.updateTeam(updateDto));
 
 
         // memberB.roles 제거되었는지
@@ -346,7 +346,7 @@ class ProjectTeamServiceTest {
                 .anyMatch(r -> r.getTeam().getId() == updateProjectTeam.getId()
                         && r.getRollName().equals("MEMBER"))).isTrue();
         // roleList 잘 나오는지
-        List<ProjectRole> roleList = projectRoleRepository.findAllByTeamId(updateProjectTeam.getId());
+        List<Role> roleList = projectRoleRepository.findAllByTeamId(updateProjectTeam.getId());
         assertThat(roleList.stream()
                 .anyMatch(r -> r.getTeam().getId() == updateProjectTeam.getId()
                         && r.getRollName().equals("MEMBER")
@@ -404,20 +404,20 @@ class ProjectTeamServiceTest {
                 .tags(tagList)
                 .build();
 
-        ProjectTeamResponseDto saved = projectTeamServicev1.createProjectTeam(dto);
+        ProjectTeamResponseDto saved = projectTeamService.createProjectTeam(dto);
 
         List<String> newTagList = new ArrayList<>();
         newTagList.add(keepTag);
         newTagList.add(newTag);
 
-        ProjectTeamResponseDto updateProjectTeam = projectTeamServicev1.updateProjectTeam(ProjectTeamUpdateDto.builder()
+        ProjectTeamResponseDto updateProjectTeam = ProjectTeamResponseDto.valueOf(projectTeamService.updateTeam(ProjectTeamUpdateDto.builder()
                 .id(saved.getId())
                 .groupName(groupName)
                 .leaderId(memberA.getId())
                 .description(content)
                 .members(memberList)
                 .tags(newTagList)
-                .build());
+                .build()));
 
         // Team.Tags
         ProjectTeam findProjectTeam = projectTeamRepository.findById(updateProjectTeam.getId()).get();
@@ -481,8 +481,8 @@ class ProjectTeamServiceTest {
                 .tags(tagList)
                 .build();
 
-        ProjectTeamResponseDto team1 = projectTeamServicev1.createProjectTeam(team1Dto);
-        ProjectTeamResponseDto team2 = projectTeamServicev1.createProjectTeam(team2Dto);
+        ProjectTeamResponseDto team1 = projectTeamService.createProjectTeam(team1Dto);
+        ProjectTeamResponseDto team2 = projectTeamService.createProjectTeam(team2Dto);
 
         // A 1L , 2M
         // B 1M , 2L
@@ -578,9 +578,9 @@ class ProjectTeamServiceTest {
                 .tags(tagList)
                 .build();
 
-        ProjectTeamResponseDto saved = projectTeamServicev1.createProjectTeam(dto);
+        ProjectTeamResponseDto saved = projectTeamService.createProjectTeam(dto);
 
-        projectTeamServicev1.deleteProjectTeam(saved.getId());
+        projectTeamService.deleteTeam(saved.getId());
 
         Member findMemberA = memberRepository.findById(memberA.getId()).get();
         Member findMemberB = memberRepository.findById(memberB.getId()).get();
@@ -599,7 +599,7 @@ class ProjectTeamServiceTest {
                         && r.getMember().getId() == findMemberA.getId()
                         && r.getTeam().getId() == saved.getId())).isFalse();
 
-        List<ProjectRole> roles = projectRoleRepository.findAllByTeamId(saved.getId());
+        List<Role> roles = projectRoleRepository.findAllByTeamId(saved.getId());
         assertThat(roles.size()).isEqualTo(0);
     }
 
@@ -640,10 +640,10 @@ class ProjectTeamServiceTest {
                 .tags(tagList2)
                 .build();
 
-        ProjectTeamResponseDto saved = projectTeamServicev1.createProjectTeam(dto);
-        ProjectTeamResponseDto saved2 = projectTeamServicev1.createProjectTeam(dto2);
+        ProjectTeamResponseDto saved = projectTeamService.createProjectTeam(dto);
+        ProjectTeamResponseDto saved2 = projectTeamService.createProjectTeam(dto2);
 
-        projectTeamServicev1.deleteProjectTeam(saved.getId());
+        projectTeamService.deleteTeam(saved.getId());
 
         List<TeamTag> teamTags = teamTagRepository.findAllByTeamId(saved.getId());
         assertThat(teamTags.size()).isEqualTo(0);
@@ -682,7 +682,7 @@ class ProjectTeamServiceTest {
         Long firstId = 1L;
         List<Long> idList = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            Long saved = projectTeamServicev1.createProjectTeam(dto).getId();
+            Long saved = projectTeamService.createProjectTeam(dto).getId();
             idList.add(saved);
             if (i == 0) {
                 firstId = saved;
@@ -693,7 +693,7 @@ class ProjectTeamServiceTest {
         int page, size;
         page = 5;
         size = 10;
-        List<ProjectTeamResponseDto> list1 = projectTeamServicev1.getProjectTeamList(PageRequest.of(page, size), "", "");
+        List<ProjectTeamResponseDto> list1 = projectTeamService.getProjectTeamList(PageRequest.of(page, size), "", "");
         assertThat(list1.size()).isEqualTo(size);
         assertThat(list1.get(0).getId()).isEqualTo(firstId + page * size);
         assertThat(list1.get(list1.size() - 1).getId()).isEqualTo(firstId + (page + 1) * size - 1);
@@ -727,7 +727,7 @@ class ProjectTeamServiceTest {
                 .tags(tagList)
                 .build();
 
-        ProjectTeamResponseDto saved = projectTeamServicev1.createProjectTeam(dto);
+        ProjectTeamResponseDto saved = projectTeamService.createProjectTeam(dto);
         String TAG3 = "MyTag2";
         tagList.add(TAG3);
 
@@ -738,17 +738,17 @@ class ProjectTeamServiceTest {
                 .members(memberList)
                 .tags(tagList)
                 .build();
-        ProjectTeamResponseDto saved2 = projectTeamServicev1.createProjectTeam(dto2);
+        ProjectTeamResponseDto saved2 = projectTeamService.createProjectTeam(dto2);
 
-        List<ProjectTeamResponseDto> list1 = projectTeamServicev1.getProjectTeamList(PageRequest.of(0, 5), "", TAG1);
+        List<ProjectTeamResponseDto> list1 = projectTeamService.getProjectTeamList(PageRequest.of(0, 5), "", TAG1);
         assertThat(list1.size()).isEqualTo(2);
         list1.forEach(team -> assertThat(team.getTags()).contains(TAG2));
 
-        List<ProjectTeamResponseDto> list2 = projectTeamServicev1.getProjectTeamList(PageRequest.of(0, 5), "", TAG2);
+        List<ProjectTeamResponseDto> list2 = projectTeamService.getProjectTeamList(PageRequest.of(0, 5), "", TAG2);
         assertThat(list2.size()).isEqualTo(2);
         list2.forEach(team -> assertThat(team.getTags()).contains(TAG2));
 
-        List<ProjectTeamResponseDto> list3 = projectTeamServicev1.getProjectTeamList(PageRequest.of(0, 5), "", TAG3);
+        List<ProjectTeamResponseDto> list3 = projectTeamService.getProjectTeamList(PageRequest.of(0, 5), "", TAG3);
         assertThat(list3.size()).isEqualTo(1);
         list3.forEach(team -> assertThat(team.getTags()).contains(TAG3));
 
@@ -784,7 +784,7 @@ class ProjectTeamServiceTest {
 
         int periodNowCount = 5;
         for (int i = 0; i < periodNowCount; i++) {
-            projectTeamServicev1.createProjectTeam(dto);
+            projectTeamService.createProjectTeam(dto);
         }
 
         int period2021Count = 3;
@@ -797,20 +797,20 @@ class ProjectTeamServiceTest {
         }
 
         String year = String.valueOf(LocalDate.now().getYear());
-        List<ProjectTeamResponseDto> list2022 = projectTeamServicev1.getProjectTeamList(PageRequest.of(0, 10), year, "");
+        List<ProjectTeamResponseDto> list2022 = projectTeamService.getProjectTeamList(PageRequest.of(0, 10), year, "");
         assertThat(list2022.size()).isEqualTo(periodNowCount);
         list2022.forEach(team -> assertThat(team.getGroupName().equals(groupName)));
         System.out.println("2022");
         for (ProjectTeamResponseDto projectTeamResponseDto : list2022) {
-            System.out.println(projectTeamResponseDto.getGroupName()+" / "+projectTeamResponseDto.getId());
+            System.out.println(projectTeamResponseDto.getGroupName() + " / " + projectTeamResponseDto.getId());
         }
 
-        List<ProjectTeamResponseDto> list2021 = projectTeamServicev1.getProjectTeamList(PageRequest.of(0, 10), "2021", "");
+        List<ProjectTeamResponseDto> list2021 = projectTeamService.getProjectTeamList(PageRequest.of(0, 10), "2021", "");
         assertThat(list2021.size()).isEqualTo(period2021Count);
         list2021.forEach(team -> assertThat(team.getGroupName().equals(period2021GroupName)));
         System.out.println("2021");
         for (ProjectTeamResponseDto projectTeamResponseDto : list2021) {
-            System.out.println(projectTeamResponseDto.getGroupName()+" / "+projectTeamResponseDto.getId());
+            System.out.println(projectTeamResponseDto.getGroupName() + " / " + projectTeamResponseDto.getId());
         }
     }
 
@@ -843,11 +843,11 @@ class ProjectTeamServiceTest {
                 .tags(tagList)
                 .build();
 
-        ProjectTeamResponseDto saved = projectTeamServicev1.createProjectTeam(dto);
+        ProjectTeamResponseDto saved = projectTeamService.createProjectTeam(dto);
 
-        ProjectTeamResponseDto res = projectTeamServicev1.getProjectTeamById(saved.getId());
+        ProjectTeamResponseDto res = projectTeamService.getProjectTeamById(saved.getId());
         assertThat(res.getId()).isEqualTo(saved.getId());
-        res.getMembers().forEach(member->assertThat(memberList.contains(member.getId())).isTrue());
+        res.getMembers().forEach(member -> assertThat(memberList.contains(member.getId())).isTrue());
         res.getTags().forEach(tag -> assertThat(tagList.contains(tag)).isTrue());
 
     }

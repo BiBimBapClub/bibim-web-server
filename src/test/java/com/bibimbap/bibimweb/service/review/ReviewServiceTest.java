@@ -10,7 +10,7 @@ import com.bibimbap.bibimweb.dto.team.project.ProjectTeamResponseDto;
 import com.bibimbap.bibimweb.repository.team.review.ReviewRepository;
 import com.bibimbap.bibimweb.service.lib.MemberManager;
 import com.bibimbap.bibimweb.service.member.MemberService;
-import com.bibimbap.bibimweb.service.team.legacy.ProjectTeamServicev1;
+import com.bibimbap.bibimweb.service.team.ProjectTeamService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -38,14 +38,14 @@ public class ReviewServiceTest {
     @Autowired
     MemberService memberService;
     @Autowired
-    ProjectTeamServicev1 projectTeamServicev1;
+    ProjectTeamService projectTeamService;
 
     @Test
     @DisplayName("리뷰 통합 테스트")
     void createReview() {
         MemberResponseDto memberA = memberManager.createMember("memberA", "11");
         MemberResponseDto memberB = memberManager.createMember("memberB", "22");
-        ProjectTeamResponseDto team = projectTeamServicev1.createProjectTeam(ProjectTeamCreateDto.builder()
+        ProjectTeamResponseDto team = projectTeamService.createProjectTeam(ProjectTeamCreateDto.builder()
                 .description("123")
                 .leaderId(memberA.getId())
                 .groupName("team1")

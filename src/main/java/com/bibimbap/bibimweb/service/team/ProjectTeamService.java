@@ -10,6 +10,7 @@ import java.util.List;
 public interface ProjectTeamService extends TeamService {
     ProjectTeamResponseDto createProjectTeam(ProjectTeamCreateDto dto);
     ProjectTeamResponseDto getProjectTeamById(Long teamId);
-    List<ProjectTeamResponseDto> getProjectTeamList();
-    boolean isValidPage(Pageable pageable);
+    List<ProjectTeamResponseDto> getProjectTeamList(Pageable pageable, String year, String tag);
+    boolean isValidPageOnProjectTeam(Pageable pageable);
+
 }

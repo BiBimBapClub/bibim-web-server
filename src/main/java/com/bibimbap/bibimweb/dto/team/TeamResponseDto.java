@@ -1,5 +1,6 @@
 package com.bibimbap.bibimweb.dto.team;
 
+import com.bibimbap.bibimweb.domain.role.RoleName;
 import com.bibimbap.bibimweb.domain.team.Team;
 import com.bibimbap.bibimweb.dto.member.MemberResponseDto;
 import com.bibimbap.bibimweb.dto.member.team.MemberTeamResponseDto;
@@ -42,6 +43,7 @@ public class TeamResponseDto {
                 .description(team.getDescription())
                 .leader(MemberTeamResponseDto.valueOf(team.getLeader()))
                 .members(team.getMemberRoles().stream()
+                        .filter(mr -> mr.getRollName().equals(RoleName.MEMBER.name()))
                         .map(mr->MemberTeamResponseDto.valueOf(mr.getMember()))
                         .collect(Collectors.toList()))
                 .tags(team.getTags().stream()

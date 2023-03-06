@@ -10,6 +10,6 @@ public interface StudyTeamService extends TeamService {
     StudyTeamResponseDto createStudyTeam(StudyTeamCreateDto dto);
     StudyTeamResponseDto getStudyTeamById(Long teamId);
     List<StudyTeamResponseDto> getStudyTeamList(Pageable pageable, String year, String tag);
+    boolean isValidPageOnStudyTeam(Pageable pageable);
 
-    boolean isValidPage(Pageable pageable);
 }

@@ -8,4 +8,6 @@ public interface TeamService {
     // update team property
     TeamResponseDto updateTeam(TeamUpdateDto dto);
     TeamResponseDto deleteTeam(Long id);
+
+    Team getTeamById(Long id);
 }

@@ -4,8 +4,6 @@ import com.bibimbap.bibimweb.dto.team.project.ProjectTeamCreateDto;
 import com.bibimbap.bibimweb.dto.team.project.ProjectTeamResponseDto;
 import com.bibimbap.bibimweb.dto.team.project.ProjectTeamUpdateDto;
 import com.bibimbap.bibimweb.service.team.ProjectTeamService;
-import com.bibimbap.bibimweb.service.team.legacy.ProjectTeamServicev1;
-import com.bibimbap.bibimweb.util.exception.NotFoundException;
 import com.bibimbap.bibimweb.util.exception.OutOfRangeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +29,7 @@ public class ProjectTeamController {
     public List<ProjectTeamResponseDto> getProjectTeamList(Pageable pageable,
                                                            @RequestParam(required = false, defaultValue = "") String year,
                                                            @RequestParam(required = false, defaultValue = "") String tag) {
-        if (!projectTeamService.isValidPage(pageable)) {
+        if (!projectTeamService.isValidPageOnProjectTeam(pageable)) {
             throw OutOfRangeException.PAGE;
         }
         return projectTeamService.getProjectTeamList(pageable,year,tag);
@@ -39,26 +37,18 @@ public class ProjectTeamController {
 
     @GetMapping("/{teamId}")
     public ProjectTeamResponseDto getProjectTeamById(@PathVariable Long teamId) {
-        if (projectTeamService.isNotExistTeam(teamId)) {
-            throw NotFoundException.PROJECT_GROUP;
-        }
         return projectTeamService.getProjectTeamById(teamId);
     }
 
     @PutMapping("/")
     public ProjectTeamResponseDto updateProjectTeam(@RequestBody ProjectTeamUpdateDto dto) {
-        if (projectTeamService.isNotExistTeam(dto.getId())) {
-            throw NotFoundException.PROJECT_GROUP;
-        }
-        return projectTeamService.updateProjectTeam(dto);
+        return ProjectTeamResponseDto.valueOf(projectTeamService.updateTeam(dto));
     }
+
 
     @DeleteMapping("/{teamId}")
     public ResponseEntity deleteProjectTeam(@PathVariable Long teamId) {
-        if (projectTeamService.isNotExistTeam(teamId)) {
-            throw NotFoundException.PROJECT_GROUP;
-        }
-        projectTeamService.deleteProjectTeam(teamId);
+        projectTeamService.deleteTeam(teamId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

@@ -7,7 +7,7 @@ import com.bibimbap.bibimweb.domain.role.RoleName;
 import com.bibimbap.bibimweb.domain.team.ProjectTeam;
 import com.bibimbap.bibimweb.domain.team.StudyTeam;
 import com.bibimbap.bibimweb.domain.team.Team;
-import com.bibimbap.bibimweb.domain.team.TeamPost;
+import com.bibimbap.bibimweb.domain.post.Post;
 import com.bibimbap.bibimweb.dto.team.TeamResponseDto;
 import com.bibimbap.bibimweb.dto.team.TeamUpdateDto;
 import com.bibimbap.bibimweb.dto.team.project.ProjectTeamCreateDto;
@@ -22,7 +22,7 @@ import com.bibimbap.bibimweb.service.role.ProjectTeamRoleService;
 import com.bibimbap.bibimweb.service.role.StudyTeamRoleService;
 import com.bibimbap.bibimweb.service.role.TeamRoleService;
 import com.bibimbap.bibimweb.service.team.nested.TagService;
-import com.bibimbap.bibimweb.service.team.nested.TeamPostService;
+import com.bibimbap.bibimweb.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -48,7 +48,7 @@ public class TeamServiceImpl implements TeamService, ProjectTeamService, StudyTe
     private final StudyTeamRoleService studyTeamRoleService;
     private final TagService tagService;
 
-    private final TeamPostService teamPostService;
+    private final PostService teamPostService;
 
     @Override
     @CheckTeamId
@@ -62,6 +62,7 @@ public class TeamServiceImpl implements TeamService, ProjectTeamService, StudyTe
         // 멤버 Role 업데이트
         List<Long> originalMembers = team.getMemberRoles()
                 .stream()
+                .filter(mr -> mr.getRollName().equals(RoleName.MEMBER.name()))
                 .map(mr -> mr.getMember().getId()).collect(Collectors.toList());
 
         Set<Long> originalSet = new HashSet<>(originalMembers);
@@ -70,8 +71,8 @@ public class TeamServiceImpl implements TeamService, ProjectTeamService, StudyTe
         Set<Long> addList = new HashSet<>(newSet);
         Set<Long> deleteList = new HashSet<>(originalSet);
 
-        addList.removeAll(newSet);
-        deleteList.removeAll(originalSet);
+        addList.removeAll(originalSet);
+        deleteList.removeAll(newSet);
 
         // 1. 추가 멤버
         for (Long id : addList) {
@@ -111,9 +112,9 @@ public class TeamServiceImpl implements TeamService, ProjectTeamService, StudyTe
         teamRoleService.deleteEntireTeamRole(team);
 
         // post 삭제
-        List<TeamPost> posts = team.getPosts();
-        for (TeamPost post : posts) {
-            teamPostService.deleteTeamPost(post);
+        List<Post> posts = team.getPosts();
+        for (Post post : posts) {
+            teamPostService.deletePost(post.getId());
         }
 
         // Tag 연관관계 빼기
@@ -122,7 +123,16 @@ public class TeamServiceImpl implements TeamService, ProjectTeamService, StudyTe
         return TeamResponseDto.valueOf(team);
     }
 
+    @Override
+    @CheckTeamId
+    @Transactional
+    public Team getTeamById(Long id) {
+        return teamRepository.findById(id).get();
+    }
 
+    /////////////////////////////////////////////////////
+    // ProjectTeam
+    /////////////////////////////////////////////////////
     @Override
     @Transactional
     public ProjectTeamResponseDto createProjectTeam(ProjectTeamCreateDto dto) {
@@ -134,14 +144,14 @@ public class TeamServiceImpl implements TeamService, ProjectTeamService, StudyTe
             Optional<Member> optionalMember = memberRepository.findById(memberId);
             if (optionalMember.isPresent()) {
                 Member member = optionalMember.get();
-                projectTeamRoleService.addProjectTeamRole(newTeam, member, RoleName.MEMBER);
+                projectTeamRoleService.addTeamRole(newTeam, member, RoleName.MEMBER);
             }
         });
 
         Optional<Member> optionalLeader = memberRepository.findById(dto.getLeaderId());
         if (optionalLeader.isPresent()) {
             Member leader = optionalLeader.get();
-            projectTeamRoleService.addProjectTeamRole(newTeam, leader, RoleName.LEADER);
+            projectTeamRoleService.addTeamRole(newTeam, leader, RoleName.LEADER);
         }
 
         tagService.saveTags(newTeam.getId(), dto.getTags());
@@ -155,14 +165,25 @@ public class TeamServiceImpl implements TeamService, ProjectTeamService, StudyTe
         ProjectTeam projectTeam = projectTeamRepository.findById(teamId).get();
         return ProjectTeamResponseDto.valueOf(projectTeam);
     }
-
     @Override
     @Transactional
-    public List<ProjectTeamResponseDto> getProjectTeamList() {
+    public List<ProjectTeamResponseDto> getProjectTeamList(Pageable pageable, String year, String tag) {
         List<ProjectTeam> list = projectTeamRepository.findAll();
         return list.stream().map(projectTeam -> ProjectTeamResponseDto.valueOf(projectTeam)).collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
+    public boolean isValidPageOnProjectTeam(Pageable pageable) {
+        int pageNumber = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
+        long count = projectTeamRepository.count();
+        return 0 <= pageNumber && pageNumber <= ((count - 1) / pageSize);
+    }
+
+    /////////////////////////////////////////////////////
+    // StudyTeam
+    /////////////////////////////////////////////////////
     @Override
     @Transactional
     public StudyTeamResponseDto createStudyTeam(StudyTeamCreateDto dto) {
@@ -174,14 +195,14 @@ public class TeamServiceImpl implements TeamService, ProjectTeamService, StudyTe
             Optional<Member> optionalMember = memberRepository.findById(memberId);
             if (optionalMember.isPresent()) {
                 Member member = optionalMember.get();
-                studyTeamRoleService.addStudyTeamRole(newTeam, member, RoleName.MEMBER);
+                studyTeamRoleService.addTeamRole(newTeam, member, RoleName.MEMBER);
             }
         });
 
         Optional<Member> optionalLeader = memberRepository.findById(dto.getLeaderId());
         if (optionalLeader.isPresent()) {
             Member leader = optionalLeader.get();
-            studyTeamRoleService.addStudyTeamRole(newTeam, leader, RoleName.LEADER);
+            studyTeamRoleService.addTeamRole(newTeam, leader, RoleName.LEADER);
         }
 
         tagService.saveTags(newTeam.getId(), dto.getTags());
@@ -204,7 +225,14 @@ public class TeamServiceImpl implements TeamService, ProjectTeamService, StudyTe
     }
 
     @Override
-    public boolean isValidPage(Pageable pageable) {
-        return false;
+    @Transactional
+    public boolean isValidPageOnStudyTeam(Pageable pageable) {
+        int pageNumber = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
+        long count = studyTeamRepository.count();
+        return 0 <= pageNumber && pageNumber <= ((count - 1) / pageSize);
     }
+
+
+
 }

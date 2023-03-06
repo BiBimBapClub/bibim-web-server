@@ -6,6 +6,7 @@ public class NotFoundException extends RuntimeException {
     public static final NotFoundException PROJECT_GROUP = new NotFoundException("존재하지 않는 프로젝트입니다");
     public static final NotFoundException STUDY_GROUP = new NotFoundException("존재하지 않는 스터디입니다");
     public static final NotFoundException TEAM = new NotFoundException("존재하지 않는 팀입니다");
+    public static final NotFoundException POST = new NotFoundException("존재하지 않는 게시글입니다");
     private NotFoundException(String message) {
         super(message);
     }

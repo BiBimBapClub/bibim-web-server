@@ -1,6 +1,7 @@
 package com.bibimbap.bibimweb.domain.team;
 
 import com.bibimbap.bibimweb.domain.member.Member;
+import com.bibimbap.bibimweb.domain.post.Post;
 import com.bibimbap.bibimweb.domain.role.Role;
 import com.bibimbap.bibimweb.domain.team.tag.TeamTag;
 import com.bibimbap.bibimweb.dto.team.TeamUpdateDto;
@@ -55,7 +56,7 @@ public class Team {
     @OneToMany
     @JoinColumn(name = "team_id")
     @Builder.Default
-    private List<TeamPost> posts = new ArrayList<>();
+    private List<Post> posts = new ArrayList<>();
 
     public void update(TeamUpdateDto dto) {
         this.groupName = dto.getGroupName();
